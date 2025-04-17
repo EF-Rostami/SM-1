@@ -1,0 +1,102 @@
+<!-- templates/users/profile.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-user-circle fa-6x text-primary"></i>
+                    </div>
+                    <h4>{{ profile_user.get_full_name }}</h4>
+                    <p class="text-muted">{{ profile_user.role|title }}</p>
+                    <div class="mt-3">
+                        <a href="{% url 'profile_edit' %}" class="btn btn-primary">Edit Profile</a>
+                        <a href="{% url 'change_password' %}" class="btn btn-secondary">Change Password</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Profile Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr>
+                            <th width="30%">Username:</th>
+                            <td>{{ profile_user.username }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email:</th>
+                            <td>{{ profile_user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th>Phone:</th>
+                            <td>{{ profile_user.phone_number|default:"Not provided" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Address:</th>
+                            <td>{{ profile_user.address|default:"Not provided" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Joined:</th>
+                            <td>{{ profile_user.date_joined|date:"F d, Y" }}</td>
+                        </tr>
+                        {% if student_profile %}
+                        <tr>
+                            <th>Admission Number:</th>
+                            <td>{{ student_profile.admission_number }}</td>
+                        </tr>
+                        <tr>
+                            <th>Class:</th>
+                            <td>{{ student_profile.current_class }}</td>
+                        </tr>
+                        {% elif teacher_profile %}
+                        <tr>
+                            <th>Employee ID:</th>
+                            <td>{{ teacher_profile.employee_id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Subjects:</th>
+                            <td>
+                                {% for subject in teacher_profile.subjects.all %}
+                                <span class="badge bg-info">{{ subject.name }}</span>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+
+            <!-- Recent Activity Card -->
+            <div class="card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Recent Activity</h5>
+                    <a href="{% url 'activity_log' %}" class="btn btn-sm btn-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for activity in recent_activities %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ activity.action }}</h6>
+                                <small>{{ activity.timestamp|timesince }} ago</small>
+                            </div>
+                            <p class="mb-1">{{ activity.description }}</p>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">No recent activity</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

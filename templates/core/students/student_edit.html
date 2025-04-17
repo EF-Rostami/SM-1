@@ -1,0 +1,99 @@
+# core/templates/core/students/student_edit.html
+{% extends 'core/base.html' %}
+{% load form_filters %}
+
+{% block title %}Edit Student - {{ object.user.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title mb-0">Edit Student Information</h3>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="row">
+                <!-- Personal Information -->
+                <div class="col-md-6">
+                    <h4 class="mb-3">Personal Information</h4>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">First Name</label>
+                        {{ form.first_name|add_class:"form-control" }}
+                        {% if form.first_name.errors %}
+                            <div class="text-danger">{{ form.first_name.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Last Name</label>
+                        {{ form.last_name|add_class:"form-control" }}
+                        {% if form.last_name.errors %}
+                            <div class="text-danger">{{ form.last_name.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        {{ form.email|add_class:"form-control" }}
+                        {% if form.email.errors %}
+                            <div class="text-danger">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Academic Information -->
+                <div class="col-md-6">
+                    <h4 class="mb-3">Academic Information</h4>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Admission Number</label>
+                        {{ form.admission_number|add_class:"form-control" }}
+                        {% if form.admission_number.errors %}
+                            <div class="text-danger">{{ form.admission_number.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Date of Birth</label>
+                        {{ form.date_of_birth|add_class:"form-control" }}
+                        {% if form.date_of_birth.errors %}
+                            <div class="text-danger">{{ form.date_of_birth.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Current Class</label>
+                        {{ form.current_class|add_class:"form-control" }}
+                        {% if form.current_class.errors %}
+                            <div class="text-danger">{{ form.current_class.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Blood Group</label>
+                        {{ form.blood_group|add_class:"form-control" }}
+                        {% if form.blood_group.errors %}
+                            <div class="text-danger">{{ form.blood_group.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Admission Date</label>
+                        {{ form.admission_date|add_class:"form-control" }}
+                        {% if form.admission_date.errors %}
+                            <div class="text-danger">{{ form.admission_date.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-end mt-4">
+                <a href="{% url 'student_detail' object.pk %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

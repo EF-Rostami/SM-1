@@ -1,0 +1,38 @@
+<!-- templates/emails/exam_result.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #f8f9fa; padding: 20px; text-align: center; }
+        .content { padding: 20px; }
+        .button { 
+            display: inline-block; 
+            padding: 10px 20px; 
+            background: #007bff; 
+            color: white; 
+            text-decoration: none; 
+            border-radius: 5px; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Exam Result Notification</h2>
+        </div>
+        <div class="content">
+            <p>Dear {{ student_name }},</p>
+            <p>Your result for {{ exam_name }} has been published:</p>
+            <ul>
+                <li>Marks Obtained: {{ marks }}/{{ total_marks }}</li>
+                <li>Status: {{ status }}</li>
+            </ul>
+            <p>
+                <a href="{{ result_url }}" class="button">View Details</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

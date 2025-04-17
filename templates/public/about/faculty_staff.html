@@ -1,0 +1,59 @@
+{% extends 'public_base.html' %}
+{% load static %}  # Add this line right after the extends tag
+
+{% block title %}Faculty and Staff{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Our Faculty and Staff</h1>
+    <section>
+        <h2>Meet Our Team</h2>
+        <p>At ABC Elementary School, our faculty and staff are the heart of our school community. Each member of our team is dedicated to creating a safe, supportive, and inspiring learning environment for our students.  
+
+            Our **teachers** are passionate, highly qualified professionals who bring creativity, expertise, and care to the classroom. They are committed to fostering a love of learning, tailoring instruction to meet individual student needs, and empowering every child to achieve their best.  
+            
+            Supporting our teachers are our **paraprofessionals** and **teaching assistants**, who work closely with students to provide additional guidance and encouragement. Their dedication ensures that all students have the tools they need to thrive academically and socially.  
+            
+            Our **administrative staff** plays a vital role in the daily operations of our school, ensuring that everything runs smoothly. From welcoming families at the front office to coordinating school events, they are always ready to assist and support our community.  
+            
+            We are fortunate to have a team of **specialists** who enrich our curriculum. This includes art, music, and physical education teachers, as well as counselors and special education staff who address the diverse needs of our students.  
+            
+            Additionally, our **custodial and maintenance team** ensures that our school remains a clean, safe, and welcoming space for everyone.  
+            
+            Together, our faculty and staff are dedicated to helping every child succeed, not just academically but also emotionally and socially. Their teamwork and commitment make ABC Elementary School a place where students feel valued, supported, and ready to shine.  </p>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <img src="{% static 'images/staff/lennon.jpg' %}" class="card-img-top" alt="Staff Member">
+                    <div class="card-body">
+                        <h5 class="card-title">Mr. John Lennon</h5>
+                        <p class="card-text">School Director</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <img src="{% static 'images/staff/einstein.jpg' %}" class="card-img-top" alt="Staff Member">
+                    <div class="card-body">
+                        <h5 class="card-title">Mr. Albert Einstein </h5>
+                        <p class="card-text">Head of Physics Group</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <img src="{% static 'images/staff/dali.jpg' %}" class="card-img-top" alt="Staff Member">
+                    <div class="card-body">
+                        <h5 class="card-title">Mr. Salvador Dalí </h5>
+                        <p class="card-text">Head of Art Group</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

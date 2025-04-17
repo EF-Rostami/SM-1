@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>{% if is_edit %}Edit{% else %}Add{% endif %} Exam Result</h2>
+        <div>
+            <a href="{% url 'exam_list' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Exams
+            </a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5>Exam Information</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <p><strong>Exam Name:</strong> {{ exam.name }}</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Subject:</strong> {{ exam.subject.name }}</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Total Marks:</strong> {{ exam.total_marks }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <p><strong>Class:</strong> {{ exam.class_room.name }} - {{ exam.class_room.section }}</p>
+                </div>
+                <div class="col-md-4">
+                    <p><strong>Date:</strong> {{ exam.date }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5>Enter Result</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="{{ form.student.id_for_label }}" class="form-label">Student</label>
+                        {{ form.student|add_class:"form-select" }}
+                        {% if form.student.errors %}
+                        <div class="text-danger">
+                            {{ form.student.errors|first }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label for="{{ form.marks_obtained.id_for_label }}" class="form-label">Marks Obtained</label>
+                        {{ form.marks_obtained|add_class:"form-control" }}
+                        {% if form.marks_obtained.errors %}
+                        <div class="text-danger">
+                            {{ form.marks_obtained.errors|first }}
+                        </div>
+                        {% endif %}
+                        <small class="text-muted">Maximum marks: {{ exam.total_marks }}</small>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.remarks.id_for_label }}" class="form-label">Remarks</label>
+                    {{ form.remarks|add_class:"form-control" }}
+                    {% if form.remarks.errors %}
+                    <div class="text-danger">
+                        {{ form.remarks.errors|first }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-1"></i>
+                        {% if is_edit %}Update{% else %}Save{% endif %} Result
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

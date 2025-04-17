@@ -1,0 +1,21 @@
+<!-- templates/reports/student_performance.html -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h4>Attendance Summary</h4>
+        <div class="progress mb-2">
+            {% if attendance_stats.total_days > 0 %}
+                <div class="progress-bar" role="progressbar" 
+                    style="width: {% widthratio attendance_stats.present_days attendance_stats.total_days 100 %}%">
+                    {% widthratio attendance_stats.present_days attendance_stats.total_days 100 %}%
+                </div>
+            {% else %}
+                <div class="progress-bar" role="progressbar" style="width: 0%">
+                    0%
+                </div>
+            {% endif %}
+        </div>
+        <p>Total Days: {{ attendance_stats.total_days }}</p>
+        <p>Present: {{ attendance_stats.present_days }} days</p>
+        <p>Absent: {{ attendance_stats.absent_days }} days</p>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+{% extends 'public_base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2>{{ post.title }}</h2>
+            <small class="text-muted">
+                Posted on {{ post.created_at|date:"F d, Y" }} 
+                {% if post.author %}by {{ post.author.get_full_name|default:post.author.username }}{% endif %}
+            </small>
+        </div>
+        <div class="card-body">
+            {{ post.content|safe }}
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+            <a href="{% url 'post_list' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Posts
+            </a>
+            
+            {% if user == post.author %}
+            <div>
+                <!-- Add edit button if you have that feature -->
+                <a href="{% url 'post_delete' post.pk %}" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Delete
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

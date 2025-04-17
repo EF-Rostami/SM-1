@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">My Registered Events</h4>
+        </div>
+        <div class="card-body">
+            <ul class="nav nav-tabs mb-4" id="eventsTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="upcoming-tab" data-bs-toggle="tab" data-bs-target="#upcoming" type="button" role="tab" aria-controls="upcoming" aria-selected="true">
+                        Upcoming <span class="badge bg-primary ms-2">{{ upcoming_events|length }}</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="ongoing-tab" data-bs-toggle="tab" data-bs-target="#ongoing" type="button" role="tab" aria-controls="ongoing" aria-selected="false">
+                        Ongoing <span class="badge bg-warning ms-2">{{ ongoing_events|length }}</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="past-tab" data-bs-toggle="tab" data-bs-target="#past" type="button" role="tab" aria-controls="past" aria-selected="false">
+                        Past <span class="badge bg-secondary ms-2">{{ past_events|length }}</span>
+                    </button>
+                </li>
+            </ul>
+            
+            <div class="tab-content" id="eventsTabContent">
+                <!-- Upcoming Events -->
+                <div class="tab-pane fade show active" id="upcoming" role="tabpanel" aria-labelledby="upcoming-tab">
+                    {% if upcoming_events %}
+                        <div class="row">
+                            {% for registration in upcoming_events %}
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-header">
+                                            <h5 class="card-title mb-0">{{ registration.event.title }}</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="card-text">
+                                                <i class="fas fa-calendar-alt me-2 text-primary"></i>{{ registration.event.date|date:"F d, Y" }}
+                                            </p>
+                                            <p class="card-text">
+                                                <i class="fas fa-map-marker-alt me-2 text-primary"></i>{{ registration.event.location }}
+                                            </p>
+                                            <p class="card-text">
+                                                <i class="fas fa-info-circle me-2 text-primary"></i>Status: 
+                                                <span class="badge {% if registration.status == 'confirmed' %}bg-success{% elif registration.status == 'pending' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                                    {% if registration.status == 'confirmed' %}Confirmed
+                                                    {% elif registration.status == 'pending' %}Pending
+                                                    {% else %}{{ registration.status|title }}{% endif %}
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <div class="card-footer bg-transparent d-grid gap-2">
+                                            <a href="{% url 'event_detail' registration.event.id %}" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-eye me-2"></i>View Details
+                                            </a>
+                                            <a href="{% url 'event_cancel_registration' registration.event.id %}" class="btn btn-outline-danger btn-sm">
+                                                <i class="fas fa-times me-2"></i>Cancel Registration
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>You don't have any upcoming events.
+                            <a href="{% url 'event_list' %}" class="alert-link">Browse available events</a>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Ongoing Events -->
+                <div class="tab-pane fade" id="ongoing" role="tabpanel" aria-labelledby="ongoing-tab">
+                    {% if ongoing_events %}
+                        <div class="row">
+                            {% for registration in ongoing_events %}
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-header bg-warning text-dark">
+                                            <h5 class="card-title mb-0">{{ registration.event.title }}</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="card-text">
+                                                <i class="fas fa-calendar-alt me-2 text-warning"></i>{{ registration.event.date|date:"F d, Y" }}
+                                            </p>
+                                            <p class="card-text">
+                                                <i class="fas fa-map-marker-alt me-2 text-warning"></i>{{ registration.event.location }}
+                                            </p>
+                                            <p class="card-text">
+                                                <i class="fas fa-info-circle me-2 text-warning"></i>Status: 
+                                                <span class="badge {% if registration.status == 'confirmed' %}bg-success{% elif registration.status == 'pending' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                                    {% if registration.status == 'confirmed' %}Confirmed
+                                                    {% elif registration.status == 'pending' %}Pending
+                                                    {% else %}{{ registration.status|title }}{% endif %}
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <div class="card-footer bg-transparent">
+                                            <a href="{% url 'event_detail' registration.event.id %}" class="btn btn-warning btn-sm w-100">
+                                                <i class="fas fa-eye me-2"></i>View Details
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>You don't have any ongoing events.
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Past Events -->
+                <div class="tab-pane fade" id="past" role="tabpanel" aria-labelledby="past-tab">
+                    {% if past_events %}
+                        <div class="row">
+                            {% for registration in past_events %}
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-header bg-secondary text-white">
+                                            <h5 class="card-title mb-0">{{ registration.event.title }}</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="card-text">
+                                                <i class="fas fa-calendar-alt me-2 text-secondary"></i>{{ registration.event.date|date:"F d, Y" }}
+                                            </p>
+                                            <p class="card-text">
+                                                <i class="fas fa-map-marker-alt me-2 text-secondary"></i>{{ registration.event.location }}
+                                            </p>
+                                            <p class="card-text">
+                                                <i class="fas fa-info-circle me-2 text-secondary"></i>Status: 
+                                                <span class="badge {% if registration.status == 'confirmed' %}bg-success{% elif registration.status == 'pending' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                                    {% if registration.status == 'confirmed' %}Confirmed
+                                                    {% elif registration.status == 'pending' %}Pending
+                                                    {% else %}{{ registration.status|title }}{% endif %}
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <div class="card-footer bg-transparent">
+                                            <a href="{% url 'event_detail' registration.event.id %}" class="btn btn-secondary btn-sm w-100">
+                                                <i class="fas fa-eye me-2"></i>View Details
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>You don't have any past events.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'event_list' %}" class="btn btn-primary">
+                <i class="fas fa-search me-2"></i>Browse Events
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

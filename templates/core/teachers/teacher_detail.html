@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Teacher Details</h1>
+    <div class="card">
+        <div class="card-header">
+            <h2>{{ teacher.user.get_full_name }}</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Employee ID:</strong> {{ teacher.employee_id }}</p>
+                    <p><strong>Email:</strong> {{ teacher.user.email }}</p>
+                    <p><strong>Qualification:</strong> {{ teacher.qualification }}</p>
+                    <p><strong>Experience:</strong> {{ teacher.experience_years }} years</p>
+                    <p><strong>Date Joined:</strong> {{ teacher.date_joined }}</p>
+                </div>
+                <div class="col-md-6">
+                    <h3>Subjects</h3>
+                    <ul>
+                        {% for subject in subjects %}
+                            <li>{{ subject.name }} ({{ subject.code }})</li>
+                        {% endfor %}
+                    </ul>
+
+                    <h3>Class Teacher Of</h3>
+                    <ul>
+                        {% for class in classes %}
+                            <li>{{ class.name }} - {{ class.section }} ({{ class.academic_year }})</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'teacher_edit' teacher.pk %}" class="btn btn-warning">Edit</a>
+            <a href="{% url 'teacher_delete' teacher.pk %}" class="btn btn-danger">Delete</a>
+            <a href="{% url 'teacher_list' %}" class="btn btn-secondary">Back to List</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

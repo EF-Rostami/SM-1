@@ -1,0 +1,19 @@
+*.pyc
+
+# Create a file named .gitignore with the following content
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+db.sqlite3
+media/
+staticfiles/
+.DS_Store

@@ -1,0 +1,77 @@
+<!-- templates/exams/exam_detail.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Exam Details: {{ exam.name }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Subject:</strong> {{ exam.subject.name }}</p>
+                    <p><strong>Class:</strong> {{ exam.class_room }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Date:</strong> {{ exam.date }}</p>
+                    <p><strong>Total Marks:</strong> {{ exam.total_marks }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h4>Exam Results</h4>
+            {% if user.role == 'admin' or user.role == 'teacher' %}
+            <a href="{% url 'exam_result_create' exam.id %}" class="btn btn-primary">Add Result</a>
+            {% endif %}
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Marks Obtained</th>
+                            <th>Percentage</th>
+                            <th>Status</th>
+                            <th>Remarks</th>
+                            {% if user.role == 'admin' or user.role == 'teacher' %}
+                            <th>Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for result in results %}
+                        <tr>
+                            <td>{{ result.student.user.get_full_name }}</td>
+                            <td>{{ result.marks_obtained }}/{{ exam.total_marks }}</td>
+                            <td>{{ result.marks_obtained|multiply:100|divide:exam.total_marks|floatformat:2 }}%</td>
+                            <td>
+                                <span class="badge {% if result.has_passed %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ result.get_status }}
+                                </span>
+                            </td>
+                            <td>{{ result.remarks|default:"-" }}</td>
+                            {% if user.role == 'admin' or user.role == 'teacher' %}
+                            <td>
+                                <a href="{% url 'exam_result_edit' result.id %}" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="{% url 'exam_result_delete' result.id %}" class="btn btn-sm btn-danger">Delete</a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No results found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

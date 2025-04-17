@@ -1,0 +1,703 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .card {
+        border: none;
+        border-radius: 0.75rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .list-group-item {
+        border: none;
+        border-bottom: 1px solid rgba(0,0,0,0.1);
+        padding: 1rem;
+    }
+    
+    .list-group-item:last-child {
+        border-bottom: none;
+    }
+    
+    .progress {
+        height: 0.5rem;
+    }
+    
+    .icon-circle {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255,255,255,0.2);
+    }
+    
+    @media (max-width: 768px) {
+        .row > [class*='col-'] {
+            margin-bottom: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Welcome, {{ user.get_full_name|default:user.username }}</h2>
+            <p class="text-muted mb-0">{{ user.role|title }} Dashboard</p>
+        </div>
+        <div class="text-end">
+            <span class="text-muted">Academic Year:</span>
+            <span class="badge bg-primary ms-2">{{ academic_year }}</span>
+        </div>
+    </div>
+
+    {% if user.is_superuser or user.role == 'admin' %}
+
+    <!-- ADMIN DASHBOARD -->
+    <div class="row">
+        <!-- Statistics Cards -->
+        <div class="col-md-3 mb-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Students</h5>
+                    <h2 class="card-text">{{ total_students }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Teachers</h5>
+                    <h2 class="card-text">{{ total_teachers }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Today's Attendance</h5>
+                    <h2 class="card-text">{{ attendance_percentage }}%</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Events</h5>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h2 class="card-text">{{ total_events }}</h2>
+                        <i class="fas fa-calendar-alt fa-2x"></i>
+                    </div>
+                    <small>
+                        Upcoming: {{ upcoming_events }} | 
+                        Past: {{ past_events }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Fee Collection</h5>
+                    <h2 class="card-text">${{ total_fees.collected|default:"0" }}</h2>
+                    <small>Pending: ${{ total_fees.pending|default:"0" }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calendar-alt me-2"></i>Recent Events
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Event Title</th>
+                                    <th>Date</th>
+                                    <th>Location</th>
+                                    <th>Status</th>
+                                    <th>Registrations</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for event in recent_events %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'event_detail' event.id %}" class="text-decoration-none">
+                                            {{ event.title }}
+                                        </a>
+                                    </td>
+                                    <td>{{ event.date|date:"d M Y" }}</td>
+                                    <td>{{ event.location }}</td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if event.status == 'upcoming' %}bg-primary
+                                            {% elif event.status == 'ongoing' %}bg-warning
+                                            {% else %}bg-secondary{% endif %}">
+                                            {{ event.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {{ event.registrations.count }}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        No events found
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <div class="text-end">
+                            <a href="{% url 'admin_event_list' %}" class="btn btn-sm btn-outline-primary">
+                                Manage All Events
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div class="row">
+        <!-- Recent Activities -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Exams</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for exam in recent_exams %}
+                        <a href="{% url 'exam_results' exam.id %}" class="list-group-item list-group-item-action">
+                            {{ exam.name }} - {{ exam.subject.name }}
+                            <small class="float-end">{{ exam.date }}</small>
+                        </a>
+                        {% empty %}
+                        <p class="text-muted">No recent exams</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Recent Admissions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for student in recent_admissions %}
+                        <a href="{% url 'student_detail' student.id %}" class="list-group-item list-group-item-action">
+                            {{ student.user.get_full_name }}
+                            <small class="float-end">{{ student.admission_date }}</small>
+                        </a>
+                        {% empty %}
+                        <p class="text-muted">No recent admissions</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Class Statistics -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Class Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Class</th>
+                                    <th>Students</th>
+                                    <th>Attendance Rate</th>
+                                    <th>Class Teacher</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for class in class_stats %}
+                                <tr>
+                                    <td>{{ class.name }} - {{ class.section }}</td>
+                                    <td>
+                                        <a href="{% url 'student_list' %}?class={{ class.id }}" class="text-decoration-none">
+                                            {{ class.student_count }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {% if class.attendance_rate is not None %}
+                                            {{ class.attendance_rate|floatformat:1 }}%
+                                        {% else %}
+                                            No attendance marked
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if class.class_teacher %}
+                                            {{ class.class_teacher.user.get_full_name }}
+                                        {% else %}
+                                            Not Assigned
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No classes found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% elif user.role == 'teacher' %}
+    <!-- TEACHER DASHBOARD -->
+    <div class="row">
+        <!-- Teacher Profile Summary -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5>My Profile</h5>
+                </div>
+                <div class="card-body">
+                    <h4>{{ user.get_full_name }}</h4>
+                    <p class="text-muted">Employee ID: {{ teacher.employee_id }}</p>
+                    <p><strong>Subjects:</strong> 
+                        {% for subject in teacher_subjects %}
+                            {{ subject.name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </p>
+                    <p><strong>Experience:</strong> {{ teacher.experience_years }} years</p>
+                    <a href="{% url 'user_profile' %}" class="btn btn-sm btn-outline-primary">View Profile</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- My Classes -->
+        <div class="col-md-8 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5>My Classes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Class</th>
+                                    <th>Students</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for class in teacher_classes %}
+                                <tr>
+                                    <td>{{ class.name }} - {{ class.section }}</td>
+                                    <td>{{ class.student_set.count }}</td>
+                                    <td>
+                                        <a href="{% url 'teacher_student_list' %}" class="btn btn-sm btn-primary">View Students</a>
+                                        <a href="{% url 'class_attendance_list' %}" class="btn btn-sm btn-info">Mark Attendance</a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center">You are not assigned as a class teacher yet.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Today's Attendance -->
+        {% if class_students %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5>Today's Attendance</h5>
+                </div>
+                <div class="card-body">
+                    {% if today_attendance %}
+                    <p>Attendance for today has been marked.</p>
+                    <a href="{% url 'attendance_view_list' %}" class="btn btn-sm btn-info">View Attendance</a>
+                    {% else %}
+                    <p>Attendance for today hasn't been marked yet.</p>
+                    <a href="{% url 'class_attendance_list' %}" class="btn btn-sm btn-info">Mark Attendance</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Upcoming Exams -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h5>Upcoming Exams</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for exam in teacher_exams %}
+                        <a href="#" class="list-group-item list-group-item-action">
+                            {{ exam.name }} - {{ exam.subject.name }}
+                            <small class="float-end">{{ exam.date }}</small>
+                        </a>
+                        {% empty %}
+                        <p class="text-muted">No upcoming exams</p>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-3">
+                        <a href="{% url 'exam_create' %}" class="btn btn-outline-primary">Create New Exam</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% elif user.role == 'student' %}
+    <!-- STUDENT DASHBOARD -->
+    <div class="row">
+        <!-- Student Profile Summary -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5>My Profile</h5>
+                </div>
+                <div class="card-body">
+                    <h4>{{ user.get_full_name }}</h4>
+                    <p class="text-muted">Admission Number: {{ student.admission_number }}</p>
+                    <p><strong>Class:</strong> {{ student.current_class.name }} - {{ student.current_class.section }}</p>
+                    <p><strong>Attendance:</strong> {{ attendance_percentage }}%</p>
+                    <a href="{% url 'user_profile' %}" class="btn btn-sm btn-outline-primary">View Profile</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Attendance Summary -->
+        <div class="col-md-8 mb-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5>My Attendance</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for attendance in student_attendance %}
+                                <tr>
+                                    <td>{{ attendance.date }}</td>
+                                    <td>
+                                        {% if attendance.is_present %}
+                                        <span class="badge bg-success">Present</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Absent</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="2" class="text-center">No attendance records found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Upcoming Exams -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h5>Upcoming Exams</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for exam in student_exams %}
+                        <a href="#" class="list-group-item list-group-item-action">
+                            {{ exam.name }} - {{ exam.subject.name }}
+                            <small class="float-end">{{ exam.date }}</small>
+                        </a>
+                        {% empty %}
+                        <p class="text-muted">No upcoming exams</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Exam Results -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5>Recent Results</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Exam</th>
+                                    <th>Marks</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for result in student_results %}
+                                <tr>
+                                    <td>{{ result.exam.name }} ({{ result.exam.subject.name }})</td>
+                                    <td>{{ result.marks_obtained }}/{{ result.exam.total_marks }}</td>
+                                    <td>
+                                        {% if result.has_passed %}
+                                        <span class="badge bg-success">Pass</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Fail</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center">No results found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Fee Status -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h5>Fee Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Amount</th>
+                                    <th>Due Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for fee in student_fees %}
+                                <tr>
+                                    <td>${{ fee.amount }}</td>
+                                    <td>{{ fee.due_date }}</td>
+                                    <td>
+                                        {% if fee.status == 'pending' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                        {% elif fee.status == 'paid' %}
+                                        <span class="badge bg-success">Paid</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Overdue</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center">No fee records found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% elif user.role == 'parent' %}
+    <!-- PARENT DASHBOARD -->
+    <div class="row">
+        <!-- Children Summary -->
+        <div class="col-md-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5>My Children</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for child in children %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5>{{ child.user.get_full_name }}</h5>
+                                    <p class="text-muted">{{ child.current_class.name }} - {{ child.current_class.section }}</p>
+                                    <p class="mb-2">Admission No: {{ child.admission_number }}</p>
+                                    <a href="{% url 'child_detail' child.id %}" class="btn btn-sm btn-primary">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <p class="text-center">No children registered</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+    <div class="row">
+        <!-- Attendance Overview -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5>Attendance Overview</h5>
+                </div>
+                <div class="card-body">
+                    {% for child_attendance in children_attendance %}
+                    <div class="mb-3">
+                        {% if child_attendance.student %}
+                        <h6>{{ child_attendance.student.user.get_full_name }}</h6>
+                        <div class="progress mb-2">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {{ child_attendance.attendance_percentage|default:0 }}%" 
+                                 aria-valuenow="{{ child_attendance.attendance_percentage|default:0 }}" 
+                                 aria-valuemin="0" aria-valuemax="100">
+                                {{ child_attendance.attendance_percentage|default:0 }}%
+                            </div>
+                        </div>
+                        <div class="small">
+                            {% for attendance in child_attendance.recent %}
+                            <span class="badge {% if attendance.is_present %}bg-success{% else %}bg-danger{% endif %}">
+                                {{ attendance.date|date:"d/m" }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <div class="alert alert-info">No attendance records found for children</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Fee Status -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-warning">
+                    <h5>Pending Fees</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Amount</th>
+                                    <th>Due Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for fee in children_fees %}
+                                <tr>
+                                    <td>{{ fee.student.user.get_full_name }}</td>
+                                    <td>${{ fee.amount }}</td>
+                                    <td>{{ fee.due_date }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center">No pending fees</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Academic Performance -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5>Recent Exam Results</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Exam</th>
+                                    <th>Subject</th>
+                                    <th>Marks</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for result in children_results %}
+                                <tr>
+                                    <td>{{ result.student.user.get_full_name }}</td>
+                                    <td>{{ result.exam.name }}</td>
+                                    <td>{{ result.exam.subject.name }}</td>
+                                    <td>{{ result.marks_obtained }}/{{ result.exam.total_marks }}</td>
+                                    <td>
+                                        {% if result.has_passed %}
+                                        <span class="badge bg-success">Pass</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Fail</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center">No exam results available</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

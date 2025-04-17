@@ -1,0 +1,33 @@
+# core/templates/core/students/student_confirm_delete.html
+{% extends 'core/base.html' %}
+
+{% block title %}Delete Student - {{ student.user.get_full_name }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-danger text-white">
+        <h3 class="card-title mb-0">Confirm Delete</h3>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-warning">
+            <h4 class="alert-heading">Warning!</h4>
+            <p>You are about to delete the student "{{ student.user.get_full_name }}" ({{ student.admission_number }}).</p>
+            <p>This action cannot be undone. All associated data will be permanently deleted, including:</p>
+            <ul>
+                <li>Personal information</li>
+                <li>Attendance records</li>
+                <li>Exam results</li>
+                <li>Fee records</li>
+            </ul>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="text-end mt-4">
+                <a href="{% url 'student_list' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-danger">Confirm Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

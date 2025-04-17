@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">View Attendance Records</h2>
+    
+    <div class="row">
+        {% for class_room in classes %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>{{ class_room.name }} - {{ class_room.section }}</h5>
+                </div>
+                <div class="card-body">
+                    <p>Total Students: {{ class_room.attendance_stats.total_students }}</p>
+                    <p>Working Days ({{ month }}): {{ class_room.attendance_stats.working_days }}</p>
+                    <p>Attendance Rate: {{ class_room.attendance_stats.attendance_rate }}%</p>
+                    <a href="{% url 'view_class_attendance' class_room.id %}" 
+                       class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">No classes found.</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

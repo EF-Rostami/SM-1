@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">Cancel Event Registration</h4>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <h5><i class="fas fa-exclamation-triangle me-2"></i>Confirm Cancellation</h5>
+                <p>You are about to cancel your registration for the event <strong>"{{ event.title }}"</strong>. Are you sure you want to proceed?</p>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">{{ event.title }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ event.date|date:"F d, Y" }}</h6>
+                    <p><strong>Location:</strong> {{ event.location }}</p>
+                    <p><strong>Registration Status:</strong> 
+                        <span class="badge {% if registration.status == 'confirmed' %}bg-success{% elif registration.status == 'pending' %}bg-warning{% else %}bg-secondary{% endif %}">
+                            {{ registration.get_status_display }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex justify-content-center">
+                    <a href="{% url 'event_detail' event.id %}" class="btn btn-secondary me-2">
+                        <i class="fas fa-arrow-left me-2"></i>Keep Registration
+                    </a>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-times-circle me-2"></i>Confirm Cancellation
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

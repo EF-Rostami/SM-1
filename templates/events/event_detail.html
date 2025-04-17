@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Event Details</h4>
+            <div>
+                <a href="{% url 'event_list' %}" class="btn btn-light">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Events
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <h2 class="mb-3">{{ event.title }}</h2>
+                    
+                    <div class="mb-4">
+                        <div class="d-flex mb-2">
+                            <div class="me-4">
+                                <span class="badge 
+                                    {% if event.status == 'upcoming' %}bg-primary
+                                    {% elif event.status == 'ongoing' %}bg-warning
+                                    {% else %}bg-secondary{% endif %} p-2">
+                                    {% if event.get_status_display %}
+                                        {{ event.get_status_display }}
+                                    {% else %}
+                                        {{ event.status|title }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div>
+                                <span class="text-muted">Capacity:</span>
+                                <strong>
+                                    {{ participants_count }} / 
+                                    {% if event.max_participants %}
+                                        {{ event.max_participants }}
+                                    {% else %}
+                                        Unlimited
+                                    {% endif %}
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <p class="lead">{{ event.description }}</p>
+                    </div>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2 mb-3">Event Details</h5>
+                            <div class="mb-3">
+                                <i class="fas fa-calendar-alt me-2 text-primary"></i>
+                                <span class="fw-bold">Date:</span> {{ event.date|date:"F d, Y" }}
+                            </div>
+                            <div class="mb-3">
+                                <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                <span class="fw-bold">Location:</span> {{ event.location }}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2 mb-3">Registration Info</h5>
+                            {% if event.status == 'upcoming' %}
+                                <div class="mb-3">
+                                    <i class="fas fa-user-check me-2 text-primary"></i>
+                                    <span class="fw-bold">Registration Status:</span>
+                                    {% if can_register %}
+                                        <span class="badge bg-success">Open</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Closed</span>
+                                    {% endif %}
+                                </div>
+                                
+                                {% if registered %}
+                                <div class="mb-3">
+                                    <i class="fas fa-clipboard-check me-2 text-primary"></i>
+                                    <span class="fw-bold">Your Status:</span>
+                                    <span class="badge 
+                                        {% if registration_status == 'confirmed' %}bg-success
+                                        {% elif registration_status == 'pending' %}bg-warning
+                                        {% else %}bg-secondary{% endif %}">
+                                        {{ registration_status|title }}
+                                    </span>
+                                </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            {% if request.user.is_authenticated %}
+                                {% if request.user.role == 'student' %}
+                                    {% if registered %}
+                                        <div class="alert alert-success">
+                                            <i class="fas fa-check-circle me-2"></i>You are registered for this event!
+                                        </div>
+                                        <div class="d-grid gap-2">
+                                            <a href="{% url 'event_cancel_registration' event.id %}" class="btn btn-outline-danger">
+                                                <i class="fas fa-times-circle me-2"></i>Cancel Registration
+                                            </a>
+                                        </div>
+                                    {% elif can_register and event.status == 'upcoming' %}
+                                        <div class="d-grid gap-2">
+                                            <a href="{% url 'event_register' event.id %}" class="btn btn-primary">
+                                                <i class="fas fa-user-plus me-2"></i>Register Now
+                                            </a>
+                                        </div>
+                                    {% elif event.status != 'upcoming' %}
+                                        <div class="alert alert-warning">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>Registration is closed for this event.
+                                        </div>
+                                    {% else %}
+                                        <div class="alert alert-warning">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>This event has reached full capacity.
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                                
+                                {% if request.user.is_superuser or request.user.role == 'admin' %}
+                                    <div class="d-grid gap-2 mt-3">
+                                        <a href="{% url 'admin_edit_event' event.id %}" class="btn btn-warning">
+                                            <i class="fas fa-edit me-2"></i>Edit Event
+                                        </a>
+                                        <a href="{% url 'admin_delete_event' event.id %}" class="btn btn-danger">
+                                            <i class="fas fa-trash me-2"></i>Delete Event
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>Please log in to register for this event.
+                                </div>
+                                <div class="d-grid">
+                                    <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary">
+                                        <i class="fas fa-sign-in-alt me-2"></i>Log In
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if event.max_participants %}
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Registration Progress</h5>
+                            <div class="progress mb-2">
+                                {% with percentage=participants_count|default:0 %}
+                                <div class="progress-bar 
+                                    {% if percentage < event.max_participants|floatformat:0|divisibleby:2 %}bg-success
+                                    {% elif percentage < event.max_participants|floatformat:0|divisibleby:1.5 %}bg-info
+                                    {% elif percentage < event.max_participants %}bg-warning
+                                    {% else %}bg-danger{% endif %}" 
+                                    role="progressbar" 
+                                    style="width: {% widthratio participants_count event.max_participants 100 %}%" 
+                                    aria-valuenow="{{ participants_count }}" 
+                                    aria-valuemin="0" 
+                                    aria-valuemax="{{ event.max_participants }}">
+                                    {% widthratio participants_count event.max_participants 100 %}%
+                                </div>
+                                {% endwith %}
+                            </div>
+                            <small class="text-muted">{{ participants_count }} out of {{ event.max_participants }} spots filled</small>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

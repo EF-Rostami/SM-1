@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Delete Teacher</h1>
+    <div class="alert alert-warning">
+        <p>Are you sure you want to delete the teacher "{{ teacher.user.get_full_name }}"?</p>
+        <p>This action cannot be undone.</p>
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+        <a href="{% url 'teacher_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

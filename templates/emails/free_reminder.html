@@ -1,0 +1,30 @@
+<!-- templates/emails/fee_reminder.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #f8f9fa; padding: 20px; text-align: center; }
+        .content { padding: 20px; }
+        .amount { font-size: 24px; color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Fee Payment Reminder</h2>
+        </div>
+        <div class="content">
+            <p>Dear Parent/Guardian of {{ student_name }},</p>
+            <p>This is a reminder that a fee payment of <span class="amount">${{ amount }}</span> is due on {{ due_date }}.</p>
+            <p>Please ensure timely payment to avoid any late fees.</p>
+            <p>
+                <a href="{{ payment_url }}" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+                    Make Payment
+                </a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

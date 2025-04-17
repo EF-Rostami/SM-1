@@ -1,0 +1,136 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Register New Teacher{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title mb-0">Register New Teacher</h3>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="row">
+                <!-- User Account Information -->
+                <div class="col-md-6">
+                    <h4 class="mb-3">Account Information</h4>
+                    
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Username</label>
+                        <input type="text" name="username" id="id_username" class="form-control" required>
+                        {% if form.username.errors %}
+                            <div class="text-danger">{{ form.username.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_password1" class="form-label">Password</label>
+                        <input type="password" name="password1" id="id_password1" class="form-control" required>
+                        {% if form.password1.errors %}
+                            <div class="text-danger">{{ form.password1.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_password2" class="form-label">Confirm Password</label>
+                        <input type="password" name="password2" id="id_password2" class="form-control" required>
+                        {% if form.password2.errors %}
+                            <div class="text-danger">{{ form.password2.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Personal Information -->
+                <div class="col-md-6">
+                    <h4 class="mb-3">Personal Information</h4>
+                    
+                    <div class="mb-3">
+                        <label for="id_first_name" class="form-label">First Name</label>
+                        <input type="text" name="first_name" id="id_first_name" class="form-control" required>
+                        {% if form.first_name.errors %}
+                            <div class="text-danger">{{ form.first_name.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_last_name" class="form-label">Last Name</label>
+                        <input type="text" name="last_name" id="id_last_name" class="form-control" required>
+                        {% if form.last_name.errors %}
+                            <div class="text-danger">{{ form.last_name.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Email</label>
+                        <input type="email" name="email" id="id_email" class="form-control" required>
+                        {% if form.email.errors %}
+                            <div class="text-danger">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Information -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h4 class="mb-3">Professional Information</h4>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="id_employee_id" class="form-label">Employee ID</label>
+                        <input type="text" name="employee_id" id="id_employee_id" class="form-control" required>
+                        {% if form.employee_id.errors %}
+                            <div class="text-danger">{{ form.employee_id.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_date_joined" class="form-label">Date Joined</label>
+                        <input type="date" name="date_joined" id="id_date_joined" class="form-control" required value="{{ form.date_joined.initial|date:'Y-m-d' }}">
+                        {% if form.date_joined.errors %}
+                            <div class="text-danger">{{ form.date_joined.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_experience_years" class="form-label">Years of Experience</label>
+                        <input type="number" name="experience_years" id="id_experience_years" class="form-control" required min="0" max="50">
+                        {% if form.experience_years.errors %}
+                            <div class="text-danger">{{ form.experience_years.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="id_qualification" class="form-label">Qualification</label>
+                        <input type="text" name="qualification" id="id_qualification" class="form-control" required>
+                        {% if form.qualification.errors %}
+                            <div class="text-danger">{{ form.qualification.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_subjects" class="form-label">Subjects</label>
+                        <select name="subjects" id="id_subjects" class="form-control" multiple>
+                            {% for subject in form.subjects.field.queryset %}
+                                <option value="{{ subject.id }}">{{ subject.name }}</option>
+                            {% endfor %}
+                        </select>
+                        {% if form.subjects.errors %}
+                            <div class="text-danger">{{ form.subjects.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-end mt-4">
+                <a href="{% url 'teacher_list' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Register Teacher</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

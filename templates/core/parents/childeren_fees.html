@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Fee Status</h2>
+    <div class="card mt-4">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Fee Type</th>
+                            <th>Amount</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fee in fees %}
+                        <tr>
+                            <td>{{ fee.student.user.get_full_name }}</td>
+                            <td>{{ fee.get_fee_type_display }}</td>
+                            <td>${{ fee.amount }}</td>
+                            <td>{{ fee.due_date }}</td>
+                            <td>
+                                <span class="badge {% if fee.status == 'paid' %}bg-success{% elif fee.status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                                    {{ fee.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No fee records found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
