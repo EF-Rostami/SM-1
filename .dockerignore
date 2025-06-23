@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.egg-info/
+*.egg
+*.log
+
+# Virtual environments
+venv/
+env/
+*.venv/
+
+# Django artifacts
+
+
+*.pot
+*.pyc
+
+# Environment and configuration
+.env
+.env.*
+
+# Node / frontend (if applicable)
+node_modules/
+*.tsbuildinfo
+
+
+# Git
+.git
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+
+# Coverage/testing
+.coverage
+htmlcov/
+coverage.xml
+tests/__pycache__/
+
+*.pem

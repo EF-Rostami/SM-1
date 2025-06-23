@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-9%z3eavmg+tv$r66zi!n92@psb-n&mep&yjz$_-20u9k8wsu^(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['3.120.175.127', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -137,10 +137,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS settings
 CORS_ALLOW_ALL_ORIGINS = True  # Only for development
 # For production, use:
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000",
-#     "http://127.0.0.1:3000",
-# ]
+
 
 # Custom user model
 AUTH_USER_MODEL = 'core.User'
@@ -155,17 +152,7 @@ SESSION_COOKIE_AGE = 86400  # 24 hours in seconds
 SESSION_SAVE_EVERY_REQUEST = True
 
 
-# settings.py
 
-# Email Configuration (for development)
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'  # Or your SMTP server
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'efrostami272@gmail.com'  # Replace with your email
-# EMAIL_HOST_PASSWORD = '272@Django'  # Replace with your app password
-# DEFAULT_FROM_EMAIL = 'School Management System <efrostami272@gmail.com>'
-#For testing, you can use Django's console email backend:
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 MEDIA_URL = '/media/'
